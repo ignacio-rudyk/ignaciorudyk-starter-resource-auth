@@ -1,7 +1,7 @@
-package com.ignaciorudyk.resource.auth.DTO;
+package com.ignaciorudyk.resource.auth.dto;
 
-public record JwtClaimsDTO(
-        Long userId,
+public record UserInfoDTO(
+        Long id,
         String email,
         String firstName,
         String lastName,

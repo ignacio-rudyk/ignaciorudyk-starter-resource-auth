@@ -1,12 +1,12 @@
 package com.ignaciorudyk.resource.auth.service.implementation;
 
-import com.ignaciorudyk.resource.auth.DTO.JwtClaimsDTO;
+import com.ignaciorudyk.resource.auth.config.StarterResourceAuthProperties;
+import com.ignaciorudyk.resource.auth.dto.UserInfoDTO;
 import com.ignaciorudyk.resource.auth.service.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -15,10 +15,10 @@ import javax.crypto.SecretKey;
 @Slf4j
 public class JwtServiceImpl implements JwtService {
 
-    private String secretKey;
+    private final StarterResourceAuthProperties starterResourceAuthProperties;
 
-    public JwtServiceImpl(@Value("${jwt.secret}")String secretKey) {
-        this.secretKey = secretKey;
+    public JwtServiceImpl(StarterResourceAuthProperties starterResourceAuthProperties) {
+        this.starterResourceAuthProperties = starterResourceAuthProperties;
     }
 
     @Override
@@ -33,11 +33,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public JwtClaimsDTO extractClaims(String token) {
+    public UserInfoDTO extractClaims(String token) {
         Claims claims = extractAllClaims(token);
-        return new JwtClaimsDTO(
+        return new UserInfoDTO(
                 claims.get("userId", Long.class),
-                claims.getSubject(),                    // email
+                claims.getSubject(),
                 claims.get("firstName", String.class),
                 claims.get("lastName", String.class),
                 claims.get("role", String.class)
@@ -53,7 +53,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(starterResourceAuthProperties.getSecretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

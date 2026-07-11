@@ -1,4 +1,4 @@
-package com.ignaciorudyk.resource.auth.DTO.response;
+package com.ignaciorudyk.resource.auth.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

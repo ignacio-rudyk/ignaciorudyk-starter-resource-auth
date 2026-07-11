@@ -1,8 +1,8 @@
 package com.ignaciorudyk.resource.auth.util;
 
-import com.ignaciorudyk.resource.auth.DTO.response.ErrorDTO;
-import com.ignaciorudyk.resource.auth.DTO.response.MetadataDTO;
-import com.ignaciorudyk.resource.auth.DTO.response.ResponseDTO;
+import com.ignaciorudyk.resource.auth.dto.response.ErrorDTO;
+import com.ignaciorudyk.resource.auth.dto.response.MetadataDTO;
+import com.ignaciorudyk.resource.auth.dto.response.ResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

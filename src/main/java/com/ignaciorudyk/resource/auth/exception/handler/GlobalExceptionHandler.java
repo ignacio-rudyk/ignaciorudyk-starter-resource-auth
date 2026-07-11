@@ -1,6 +1,6 @@
 package com.ignaciorudyk.resource.auth.exception.handler;
 
-import com.ignaciorudyk.resource.auth.DTO.response.ResponseDTO;
+import com.ignaciorudyk.resource.auth.dto.response.ResponseDTO;
 import com.ignaciorudyk.resource.auth.exception.InvalidTokenException;
 import com.ignaciorudyk.resource.auth.util.HttpUtil;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
 package com.ignaciorudyk.resource.auth.config;
 
-import com.ignaciorudyk.resource.auth.DTO.JwtClaimsDTO;
+import com.ignaciorudyk.resource.auth.dto.UserInfoDTO;
 import com.ignaciorudyk.resource.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,10 +22,10 @@ import java.util.List;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtServiceImpl;
+    private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(JwtService jwtServiceImpl) {
-        this.jwtServiceImpl = jwtServiceImpl;
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         if (existsBearer(request, response, filterChain, authHeader)) return;
         final String jwt = authHeader.substring(7);
-        if (!jwtServiceImpl.isTokenValid(jwt)) {
+        if (!jwtService.isTokenValid(jwt)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void buildAuthenticationToken(String jwt, HttpServletRequest request) {
-        JwtClaimsDTO claims = jwtServiceImpl.extractClaims(jwt);
+        UserInfoDTO claims = jwtService.extractClaims(jwt);
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(
                         claims,                                              // principal = JwtClaims
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
-        log.debug("Usuario autenticado via JWT: userId={}", claims.userId());
+        log.debug("Usuario autenticado via JWT: userId={}", claims.id());
     }
 
 }

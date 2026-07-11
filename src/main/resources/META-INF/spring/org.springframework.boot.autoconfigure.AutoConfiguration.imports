@@ -1,0 +1,3 @@
+com.ignaciorudyk.resource.auth.autoconfigure.AuthAutoConfiguration
+com.ignaciorudyk.resource.auth.config.security.SecurityAutoConfiguration
+com.ignaciorudyk.resource.auth.config.security.SecurityFilterChainAutoConfiguration
