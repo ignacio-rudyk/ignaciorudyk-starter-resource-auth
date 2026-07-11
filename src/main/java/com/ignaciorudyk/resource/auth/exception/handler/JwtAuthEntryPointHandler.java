@@ -17,8 +17,6 @@ import java.util.Map;
  * Devuelve 401 con JSON cuando llega un request sin token o con token inválido
  * a un endpoint protegido. Sin esto, Spring redirige al form de login (HTML).
  */
-@Component
-@ConditionalOnMissingBean(AuthenticationEntryPoint.class)
 public class JwtAuthEntryPointHandler implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();

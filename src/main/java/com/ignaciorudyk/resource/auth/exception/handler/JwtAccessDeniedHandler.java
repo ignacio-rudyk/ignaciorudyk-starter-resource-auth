@@ -16,8 +16,6 @@ import java.util.Map;
 /**
  * Devuelve 403 con JSON cuando el usuario está autenticado pero no tiene el rol necesario.
  */
-@Component
-@ConditionalOnMissingBean(AccessDeniedHandler.class)
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
