@@ -47,23 +47,24 @@ En el nuevo proyecto agregar la siguiente dependencia al pom.xml:
 
 El starter permite definir los endpoints y sus reglas de acceso desde la configuración de la aplicación.
 
+### Ejemplo de configuracion de roles y endpoints
+
+![Swagger UI](docs/images/paths-example.png)
+
 ### Propiedades configurables en el proyecto consumidor
 
 En el archivo application.properties agregue si es necesario las siguientes properties:
 
-| Propiedad                                           | Descripción                                                                          | Obligatorio |
-|-----------------------------------------------------|--------------------------------------------------------------------------------------|-------------|
-| ignaciorudyk.authentication.enabled                 | Habilita o deshabilita la dependencia (por defecto es true).                         | No          |
-| ignaciorudyk.authentication.secret-key              | Secret key.                                                                          | Sí          |
-| ignaciorudyk.authentication.public-endpoints[index] | Configure un metodo público. Ej: ...public-method[0]=/login                          | No          |
-| ignaciorudyk.authentication.user-endpoints[index]   | Configure un metodo con rol de user. Ej: ...authentication.user-method[0]=/user/**   | No          |
-| ignaciorudyk.authentication.admin-endpoints[index]  | Configure un metodo con rol de admin. Ej: ...authentication.admin-method[0]=/user/** | No          |
-| ignaciorudyk.authentication.allowed-origins[index]  | Configure qué dominios pueden consumir tu API.                                       | No          |
-| ignaciorudyk.authentication.allowed-methods[index]  | Configure qué métodos HTTP están permitidos desde otros orígenes.                    | No          |
-| ignaciorudyk.authentication.allowed-headers[index]  | Configure qué encabezados (headers) puede enviar el navegador al backend.            | No          |
-| ignaciorudyk.authentication.exposed-headers[index]  | Configure qué headers de la respuesta el navegador puede leer desde JavaScript.      | No          |
-
-Para la propiedad `ignaciorudyk.authentication.secret-key` configurar variable de entorno `JWT_SECRET`
+| Propiedad                                                                  | Descripción                                                                     | Obligatorio |
+|----------------------------------------------------------------------------|---------------------------------------------------------------------------------|-------------|
+| ignaciorudyk.resource.authorization.enabled                                | Habilita o deshabilita la dependencia (por defecto es true).                    | No          |
+| ignaciorudyk.resource.authorization.secret-key                             | Secret key.                                                                     | Sí          |
+| ignaciorudyk.resource.authorization.custom-roles[index1].role-name         | Configure un endpoint.                                                          | No          |
+| ignaciorudyk.resource.authorization.custom-roles[index1].endpoints[index2] | Configure una ruta.                                                             | No          |
+| ignaciorudyk.resource.authorization.allowed-origins[index]                 | Configure qué dominios pueden consumir tu API.                                  | No          |
+| ignaciorudyk.resource.authorization.allowed-methods[index]                 | Configure qué métodos HTTP están permitidos desde otros orígenes.               | No          |
+| ignaciorudyk.resource.authorization.allowed-headers[index]                 | Configure qué encabezados (headers) puede enviar el navegador al backend.       | No          |
+| ignaciorudyk.resource.authorization.exposed-headers[index]                 | Configure qué headers de la respuesta el navegador puede leer desde JavaScript. | No          |
 
 En una terminal dirigirse a la carpeta raiz del proyecto consumidor y ejecutar:
 
@@ -88,6 +89,7 @@ La API queda disponible en `http://localhost:8080`
  │   │   │   ├── SecurityAutoConfiguration.java
  │   │   │   ├── SecurityCustomizer.java
  │   │   │   └── SecurityFilterChainAutoConfiguration.java
+ │   │   ├── CustomRole.java
  │   │   ├── JwtAuthenticationFilter.java
  │   │   └── StarterResourceAuthProperties.java
  │   │

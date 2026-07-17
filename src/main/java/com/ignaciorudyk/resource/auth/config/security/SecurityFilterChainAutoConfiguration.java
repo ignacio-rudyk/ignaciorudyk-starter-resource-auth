@@ -1,5 +1,6 @@
 package com.ignaciorudyk.resource.auth.config.security;
 
+import com.ignaciorudyk.resource.auth.config.CustomRole;
 import com.ignaciorudyk.resource.auth.config.JwtAuthenticationFilter;
 import com.ignaciorudyk.resource.auth.config.StarterResourceAuthProperties;
 import org.springframework.beans.factory.ObjectProvider;
@@ -17,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 /**
  * SecurityConfig simplificado: sin UserDetailsService ni AuthenticationManager
  * porque este servicio no autentica — solo verifica el JWT que viene del auth-service.
@@ -30,16 +33,16 @@ public class SecurityFilterChainAutoConfiguration {
 
     private final AccessDeniedHandler accessDeniedHandler;
 
-    private final StarterResourceAuthProperties starterAuthentitcationProperties;
+    private final StarterResourceAuthProperties starterAuthenticationProperties;
 
     public SecurityFilterChainAutoConfiguration(JwtAuthenticationFilter jwtAuthFilter,
                                                 AuthenticationEntryPoint authenticationEntryPoint,
                                                 AccessDeniedHandler accessDeniedHandler,
-                                                StarterResourceAuthProperties starterAuthentitcationProperties) {
+                                                StarterResourceAuthProperties starterAuthenticationProperties) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
-        this.starterAuthentitcationProperties = starterAuthentitcationProperties;
+        this.starterAuthenticationProperties = starterAuthenticationProperties;
     }
 
     @Bean
@@ -49,17 +52,12 @@ public class SecurityFilterChainAutoConfiguration {
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(starterAuthentitcationProperties.getPublicEndpoints().toArray(String[]::new)).permitAll()
-                    .requestMatchers(starterAuthentitcationProperties.getUserEndpoints().toArray(String[]::new)).hasRole("USER")
-                    .requestMatchers(starterAuthentitcationProperties.getAdminEndpoints().toArray(String[]::new)).hasRole("ADMIN")
-                    .anyRequest().authenticated()
-            )
             .exceptionHandling(ex -> ex
                     .authenticationEntryPoint(authenticationEntryPoint)
                     .accessDeniedHandler(accessDeniedHandler)
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        setCustomAuthorizeHttpRequest(http);
         setCustomizer(http, customizer);
         return http.build();
     }
@@ -68,15 +66,26 @@ public class SecurityFilterChainAutoConfiguration {
     @ConditionalOnMissingBean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(starterAuthentitcationProperties.getAllowedOrigins());
-        config.setAllowedMethods(starterAuthentitcationProperties.getAllowedMethods());
-        config.setAllowedHeaders(starterAuthentitcationProperties.getAllowedHeaders());
-        config.setExposedHeaders(starterAuthentitcationProperties.getExposedHeaders());
+        config.setAllowedOrigins(starterAuthenticationProperties.allowedOrigins());
+        config.setAllowedMethods(starterAuthenticationProperties.allowedMethods());
+        config.setAllowedHeaders(starterAuthenticationProperties.allowedHeaders());
+        config.setExposedHeaders(starterAuthenticationProperties.exposedHeaders());
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    private void setCustomAuthorizeHttpRequest(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> starterAuthenticationProperties.customRoles()
+                .forEach(e -> {
+                    if("PERMIT_ALL".equalsIgnoreCase(e.roleName()))
+                        auth.requestMatchers(e.endpoints().toArray(String[]::new)).permitAll();
+                    else
+                        auth.requestMatchers(e.endpoints().toArray(String[]::new)).hasAuthority(e.roleName().toUpperCase());
+                })
+        );
     }
 
     private static void setCustomizer(HttpSecurity http, ObjectProvider<SecurityCustomizer> customizer) {
